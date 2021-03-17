@@ -209,4 +209,4 @@ app.post('/logout', (req, res) => {
 
 
 app.listen(setting.client_port);
-console.log(`iaam-ibitz running on port ${setting.client_port}`)
+console.log(`iaam-client running on port ${setting.client_port}`)
