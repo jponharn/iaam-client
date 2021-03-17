@@ -207,5 +207,5 @@ app.post('/logout', (req, res) => {
 })
 
 
-app.listen(8080);
-console.log('iaam-ibitz running on port 8080')
+app.listen(setting.client_port);
+console.log(`iaam-ibitz running on port ${setting.client_port}`)
