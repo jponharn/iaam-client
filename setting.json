@@ -1,0 +1,11 @@
+{
+    "op_host": "https://iaamdemo.lsr.nectec.or.th",
+    "oxd_setting": {
+        "https_extension": false,
+        "host": "localhost",
+        "port": 8099
+    },
+    "oxd_id": "",
+    "reg": {
+    }
+}
