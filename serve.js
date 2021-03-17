@@ -3,9 +3,10 @@ var session = require('express-session')
 let setting = require('./setting.json')
 const fetch = require('node-fetch')
 const fs = require('fs')
-// var app = express()
-const app = require("https-localhost")()
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+var app = express()
+
+// const app = require("https-localhost")()
+// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const oxd = require('oxd-node')(setting.oxd_setting);
 
