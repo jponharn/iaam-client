@@ -86,12 +86,12 @@ let isSigned = function(sess){
             oxd_id: setting.oxd_id,
             access_token: sess.access_token
           }, (err, response) => {
-            if(!err && response.data.active){
+            if(status.status != "error" && response.data.active){
                 resolve(true)
             } 
             else{
                 getTokenByRefreshToken(sess).then(newToken => {
-                    if(newToken.data){
+                    if(newToken.data.access_token){
                         sess.access_token = newToken.data.access_token
                         sess.refresh_token = newToken.data.refresh_token
                         resolve(true)
