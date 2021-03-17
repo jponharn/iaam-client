@@ -18,3 +18,8 @@ op_host": "https://iaamdemo.lsr.nectec.or.th",
     "reg": {
     }
 ```    
+
+## Run
+```
+node serve.js
+```
