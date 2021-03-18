@@ -86,10 +86,7 @@ let isSigned = function(sess){
             oxd_id: setting.oxd_id,
             access_token: sess.access_token
           }, (err, response) => {
-            if(status.status != "error" && response.data.active){
-                resolve(true)
-            } 
-            else{
+            if(err){
                 getTokenByRefreshToken(sess).then(newToken => {
                     if(newToken.data.access_token){
                         sess.access_token = newToken.data.access_token
@@ -99,12 +96,24 @@ let isSigned = function(sess){
                     else resolve(false)
                 })
             }
+            else{
+                if(response.data.active){
+                    resolve(true)
+                } 
+                else{
+                    getTokenByRefreshToken(sess).then(newToken => {
+                        if(newToken.data.access_token){
+                            sess.access_token = newToken.data.access_token
+                            sess.refresh_token = newToken.data.refresh_token
+                            resolve(true)
+                        }
+                        else resolve(false)
+                    })
+                }
+            }
             
           });
-
     })
-        
-    
 }
 
 

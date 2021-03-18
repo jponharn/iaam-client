@@ -82,26 +82,19 @@
                 </div>
             </div>
         </div>
-        <% if(setting.oxd_id != "") {%>
+        <% if(setting.oxd_id != "" && !uprofile.name) {%>
         <div class="row section">
             <div class="card w-100">
-                <h5 class="card-header">Get Authorization URL</h5>
+                <h5 class="card-header">Login</h5>
                 <div class="card-body">
-                    <h5 class="card-title">Gets authorization url</h5>
                     <div class="mb-3 row">
                         <label for="get-auth-op-host" class="col-sm-2 col-form-label">OP Host</label>
                         <div class="col-sm-10">
-                            <input type="text" readonly class="form-control-plaintext" id="get-auth-op-host" value="<%= setting.op_host%>">
+                            <input type="text" readonly class="form-control-plaintext" id="get_auth_oxd_id" value="<%= setting.oxd_id%>">
                         </div>
                     </div>
                     <form>
-                        <div class="row mb-3">
-                            <label for="client_name" class="col-sm-2 col-form-label">oxd_id</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="get_auth_oxd_id" required>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="get_auth_submit">Submit</button>
+                        <button type="button" class="btn btn-primary" id="get_auth_submit">Login</button>
                     </form>
                 </div>
             </div>
