@@ -64,9 +64,6 @@
                     </form>
                     <% } else{%>
                     <div class="mb-3 row">
-                        <label for="oxd_id" class="col-sm-2 col-form-label"></label>
-                    </div>
-                    <div class="mb-3 row">
                         <label for="oxd_id" class="col-sm-2 col-form-label">Client Name</label>
                         <div class="col-sm-10">
                             <input type="text" readonly class="form-control-plaintext" value="<%= setting.reg.client_name%>">
@@ -90,16 +87,22 @@
                     <div class="mb-3 row">
                         <label for="get-auth-op-host" class="col-sm-2 col-form-label">OP Host</label>
                         <div class="col-sm-10">
-                            <input type="text" readonly class="form-control-plaintext" id="get_auth_oxd_id" value="<%= setting.oxd_id%>">
+                            <input type="text" readonly class="form-control-plaintext" id="get-auth-op-host" value="<%= setting.op_host%>">
                         </div>
                     </div>
                     <form>
+                        <div class="row mb-3">
+                            <label for="client_name" class="col-sm-2 col-form-label">oxd_id</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="get_auth_oxd_id" value="<%= setting.oxd_id%>">
+                            </div>
+                        </div>
                         <button type="button" class="btn btn-primary" id="get_auth_submit">Login</button>
                     </form>
                 </div>
             </div>
         </div>
-        <% if(uprofile.name){%>
+        <% } if(setting.oxd_id != "" && uprofile.name){%>
         <div class="row section">
             <div class="card w-100">
                 <h5 class="card-header">Get User Profile</h5>
@@ -115,7 +118,7 @@
                 </div>
             </div>
         </div>
-        <% }}%>
+        <% }%>
     </div>
 </body>
 <script>
