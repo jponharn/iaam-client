@@ -3,10 +3,10 @@ var session = require('express-session')
 let setting = require('./setting.json')
 const fetch = require('node-fetch')
 const fs = require('fs')
-var app = express()
+// var app = express()
 
-// const app = require("https-localhost")()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+const app = require("https-localhost")()
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const oxd = require('oxd-node')(setting.oxd_setting);
 
@@ -123,7 +123,40 @@ app.get('/', async (req, res) => {
         let signed = await isSigned(sess)
         
         if(signed){
-            res.render('index', { 'setting': setting, 'uprofile': sess.uprofile })
+            if(sess.uprofile.userState == "active")
+                res.render('index', { 'setting': setting, 'uprofile': sess.uprofile })
+            else {
+                let uprofile = await getUserInfo(sess.access_token)
+                if(uprofile.data.claims.userState == "active"){
+                    sess.uprofile = uprofile.data.claims
+                }
+                else res.redirect(`${setting.op_host}/iaamreg/`)
+            }
+        }
+        else {
+            req.session.destroy();
+            res.render('index', { 'setting': setting, 'uprofile': {} })
+        }
+        
+    }
+    else res.render('index', { 'setting': setting, 'uprofile': {} })
+})
+
+app.get('/hello', async (req, res) => {
+    let sess = req.session.oxdapi
+    if(sess){
+        let signed = await isSigned(sess)
+        
+        if(signed){
+            if(sess.uprofile.userState == "active")
+                res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile })
+            else {
+                let uprofile = await getUserInfo(sess.access_token)
+                if(uprofile.data.claims.userState == "active"){
+                    sess.uprofile = uprofile.data.claims
+                }
+                else res.redirect(`${setting.op_host}/iaamreg/`)
+            }
         }
         else {
             req.session.destroy();
@@ -150,7 +183,7 @@ app.get('/callback', async (req, res) => {
             if(uprofile.data){
                 sess.uprofile = uprofile.data.claims
             }
-            res.redirect("/")
+            res.redirect("/hello")
         }
         else res.render('index', { 'setting': setting , 'uprofile': {}})
     }
