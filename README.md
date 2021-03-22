@@ -24,7 +24,8 @@ npm i
 Download [API Secur](https://github.com/jponharn/api-secur).
 
 ## Configuration
-copy setting.json.tmp to setting.json and then config them file
+copy setting.json.tmp to setting.json and then config them file.
+
 Application starting at port: "client_port"
 ```
 {
