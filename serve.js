@@ -3,10 +3,10 @@ var session = require('express-session')
 let setting = require('./setting.json')
 const fetch = require('node-fetch')
 const fs = require('fs')
-var app = express()
+// var app = express()
 
-// const app = require("https-localhost")()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+const app = require("https-localhost")()
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const oxd = require('oxd-node')(setting.oxd_setting);
 
@@ -80,112 +80,99 @@ let getTokenByRefreshToken = function(sess){
 }
 
 
-let isSigned = function(sess){
-    return new Promise((resolve, reject) => {
+const isSigned = (req, res, next) => {
+    let sess = req.session.oxdapi
+    if(sess){
         oxd.introspect_access_token({
             oxd_id: setting.oxd_id,
             access_token: sess.access_token
-          }, (err, response) => {
+            }, (err, response) => {
             if(err){
                 getTokenByRefreshToken(sess).then(newToken => {
                     if(newToken.data.access_token){
                         sess.access_token = newToken.data.access_token
                         sess.refresh_token = newToken.data.refresh_token
-                        resolve(true)
+                        next()
                     }
-                    else resolve(false)
+                    else {
+                        req.session.destroy();
+                        return res.render('index', { 'setting': setting, 'uprofile': {} })
+                    }
                 })
             }
             else{
                 if(response.data.active){
-                    resolve(true)
+                    next()
                 } 
                 else{
                     getTokenByRefreshToken(sess).then(newToken => {
                         if(newToken.data.access_token){
                             sess.access_token = newToken.data.access_token
                             sess.refresh_token = newToken.data.refresh_token
-                            resolve(true)
+                            next()
                         }
-                        else resolve(false)
+                        else {
+                            req.session.destroy();
+                            return res.render('index', { 'setting': setting, 'uprofile': {} })
+                        }
                     })
                 }
             }
             
-          });
-    })
+            });
+    }
+    else return res.render('index', { 'setting': setting, 'uprofile': {} })    
 }
 
 
-app.get('/', async (req, res) => {
+app.get('/', isSigned, async (req, res) => {
     let sess = req.session.oxdapi
-    if(sess){
-        let signed = await isSigned(sess)
-        
-        if(signed){
-            if(sess.uprofile.userState == "active")
-                res.render('index', { 'setting': setting, 'uprofile': sess.uprofile })
-            else {
-                let uprofile = await getUserInfo(sess.access_token)
-                if(uprofile.data.claims.userState == "active"){
-                    sess.uprofile = uprofile.data.claims
-                }
-                else res.redirect(`${setting.op_host}/iaamreg/`)
-            }
+    
+    if(sess.uprofile.userState == "active")
+        res.render('index', { 'setting': setting, 'uprofile': sess.uprofile })
+    else {
+        let uprofile = await getUserInfo(sess.access_token)
+        if(uprofile.data.claims.userState == "active"){
+            sess.uprofile = uprofile.data.claims
         }
-        else {
-            req.session.destroy();
-            res.render('index', { 'setting': setting, 'uprofile': {} })
-        }
+        else res.redirect(`${setting.op_host}/iaamreg/`)
     }
-    else res.render('index', { 'setting': setting, 'uprofile': {} })
+  
 })
 
-app.get('/hello', async (req, res) => {
+app.get('/hello', isSigned, async(req, res) => {
     let sess = req.session.oxdapi
-    if(sess){
-        let signed = await isSigned(sess)
-        
-        if(signed){
-            if(sess.uprofile.userState == "active"){
-                if(setting.super_user_only && sess.uprofile.userRole != "superuser"){
-                    res.render('warning', { 'setting': setting, 'uprofile': sess.uprofile})
-                }
-                else{
-                    let options = {
-                        method: 'GET',
-                        headers: {
-                            "oxd_id": setting.oxd_id,
-                            "scope": setting.reg.scope,
-                            "access_token": sess.access_token,
-                            "refresh_token": sess.refresh_token,
-                            "role": sess.uprofile.userRole,
-                            "user_name": sess.uprofile.user_name
-                        }
-                    }
-                    fetch(`${setting.api_endpoint}/getFeatures`, options).then(res => res.json())
-                    .then(json => {
-                        res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
-                    });
-                }
-                
-            }
-            
-            else {
-                let uprofile = await getUserInfo(sess.access_token)
-                if(uprofile.data.claims.userState == "active"){
-                    sess.uprofile = uprofile.data.claims
-                }
-                else res.redirect(`${setting.op_host}/iaamreg/`)
-            }
+   
+    if(sess.uprofile.userState == "active"){
+        if(setting.super_user_only && sess.uprofile.userRole != "superuser"){
+            res.render('warning', { 'setting': setting, 'uprofile': sess.uprofile})
         }
-        else {
-            req.session.destroy();
-            res.render('index', { 'setting': setting, 'uprofile': {} })
+        else{
+            let options = {
+                method: 'GET',
+                headers: {
+                    "oxd_id": setting.oxd_id,
+                    "scope": setting.reg.scope,
+                    "access_token": sess.access_token,
+                    "refresh_token": sess.refresh_token,
+                    "role": sess.uprofile.userRole,
+                    "user_name": sess.uprofile.user_name
+                }
+            }
+            fetch(`${setting.api_endpoint}/getFeatures`, options).then(res => res.json())
+            .then(json => {
+                res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
+            });
         }
         
     }
-    else res.render('index', { 'setting': setting, 'uprofile': {} })
+    else {
+        let uprofile = await getUserInfo(sess.access_token)
+        if(uprofile.data.claims.userState == "active"){
+            sess.uprofile = uprofile.data.claims
+        }
+        else res.redirect(`${setting.op_host}/iaamreg/`)
+    }
 })
 
 
