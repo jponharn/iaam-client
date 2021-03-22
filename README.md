@@ -20,6 +20,9 @@ Follow this docs [oxd-server docs](https://gluu.org/docs/oxd/3.1.4/install/).
 npm i
 ```       
 
+### Install API Secur
+Download [API Secur](https://github.com/jponharn/api-secur).
+
 ## Configuration
 Application starting at port: "client_port"
 ```
