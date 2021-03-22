@@ -24,10 +24,14 @@ npm i
 Download [API Secur](https://github.com/jponharn/api-secur).
 
 ## Configuration
+copy setting.json.tmp to setting.json and then config them file
 Application starting at port: "client_port"
 ```
-op_host": "https://iaamdemo.lsr.nectec.or.th",
+{
+    "op_host": "https://iaamdemo.lsr.nectec.or.th",
     "client_port": "8001",
+    "client_name": "",
+    "api_endpoint": "",
     "oxd_setting": {
         "https_extension": false,
         "host": "localhost",
@@ -36,6 +40,7 @@ op_host": "https://iaamdemo.lsr.nectec.or.th",
     "oxd_id": "",
     "reg": {
     }
+}
 ```    
 
 ## Run
