@@ -3,6 +3,7 @@
     "client_port": "8001",
     "client_name": "",
     "api_endpoint": "",
+    "super_user_only": false,
     "oxd_setting": {
         "https_extension": false,
         "host": "localhost",

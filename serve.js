@@ -148,21 +148,27 @@ app.get('/hello', async (req, res) => {
         
         if(signed){
             if(sess.uprofile.userState == "active"){
-                let options = {
-                    method: 'GET',
-                    headers: {
-                        "oxd_id": setting.oxd_id,
-                        "scope": setting.reg.scope,
-                        "access_token": sess.access_token,
-                        "refresh_token": sess.refresh_token,
-                        "role": sess.uprofile.userRole,
-                        "user_name": sess.uprofile.user_name
-                    }
+                if(setting.super_user_only && sess.uprofile.userRole !== "superuser"){
+                    res.render('warning', { 'setting': setting, 'uprofile': sess.uprofile})
                 }
-                fetch(`${setting.api_endpoint}/getFeatures`, options).then(res => res.json())
-                .then(json => {
-                    res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
-                });
+                else{
+                    let options = {
+                        method: 'GET',
+                        headers: {
+                            "oxd_id": setting.oxd_id,
+                            "scope": setting.reg.scope,
+                            "access_token": sess.access_token,
+                            "refresh_token": sess.refresh_token,
+                            "role": sess.uprofile.userRole,
+                            "user_name": sess.uprofile.user_name
+                        }
+                    }
+                    fetch(`${setting.api_endpoint}/getFeatures`, options).then(res => res.json())
+                    .then(json => {
+                        res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
+                    });
+                }
+                
             }
             
             else {
