@@ -148,7 +148,9 @@ app.get('/hello', async (req, res) => {
         
         if(signed){
             if(sess.uprofile.userState == "active"){
-                if(setting.super_user_only && sess.uprofile.userRole !== "superuser"){
+                console.log(setting.super_user_only)
+                console.log(sess.uprofile.userRole)
+                if(setting.super_user_only && sess.uprofile.userRole != "superuser"){
                     res.render('warning', { 'setting': setting, 'uprofile': sess.uprofile})
                 }
                 else{
