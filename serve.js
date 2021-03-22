@@ -159,7 +159,7 @@ app.get('/hello', async (req, res) => {
                         "user_name": sess.uprofile.user_name
                     }
                 }
-                fetch("http://localhost:8081/getFeatures", options).then(res => res.json())
+                fetch(`${setting.api_endpoint}/getFeatures`, options).then(res => res.json())
                 .then(json => {
                     res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
                 });
