@@ -137,7 +137,6 @@ app.get('/', async (req, res) => {
             req.session.destroy();
             res.render('index', { 'setting': setting, 'uprofile': {} })
         }
-        
     }
     else res.render('index', { 'setting': setting, 'uprofile': {} })
 })
@@ -148,8 +147,24 @@ app.get('/hello', async (req, res) => {
         let signed = await isSigned(sess)
         
         if(signed){
-            if(sess.uprofile.userState == "active")
-                res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile })
+            if(sess.uprofile.userState == "active"){
+                let options = {
+                    method: 'GET',
+                    headers: {
+                        "oxd_id": setting.oxd_id,
+                        "scope": setting.reg.scope,
+                        "access_token": sess.access_token,
+                        "refresh_token": sess.refresh_token,
+                        "role": sess.uprofile.userRole,
+                        "user_name": sess.uprofile.user_name
+                    }
+                }
+                fetch("http://localhost:8081/getFeatures", options).then(res => res.json())
+                .then(json => {
+                    res.render('hello', { 'setting': setting, 'uprofile': sess.uprofile, 'features': json })
+                });
+            }
+            
             else {
                 let uprofile = await getUserInfo(sess.access_token)
                 if(uprofile.data.claims.userState == "active"){

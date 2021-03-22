@@ -45,7 +45,23 @@
                 </div>
             </div>
         </div>
-        <% }%>
+        <% if(features){%>
+        <div class="row section">
+            <div class="card w-100">
+                <h5 class="card-header">Features</h5>
+                <div class="card-body">
+                    <h5 class="card-title">Allow you to access:</h5>
+                    <% features.forEach(element => {%>
+                        <div class="mb-3 row">
+                            <div class="col-sm-12">
+                                <input type="text" readonly class="form-control-plaintext" id="user_role" value="<%= element%>">
+                            </div>
+                        </div>
+                    <% })%>
+                </div>
+            </div>
+        </div>
+        <% }}%>
     </div>
 </body>
 <script>
