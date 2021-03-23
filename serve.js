@@ -88,6 +88,7 @@ const isSigned = (req, res, next) => {
             access_token: sess.access_token
             }, (err, response) => {
             if(err){
+                //check access_token crash
                 getTokenByRefreshToken(sess).then(newToken => {
                     if(newToken.data.access_token){
                         sess.access_token = newToken.data.access_token
@@ -101,10 +102,12 @@ const isSigned = (req, res, next) => {
                 })
             }
             else{
+                //access_token is active.
                 if(response.data.active){
                     next()
                 } 
                 else{
+                    //renew access_token when expired.
                     getTokenByRefreshToken(sess).then(newToken => {
                         if(newToken.data.access_token){
                             sess.access_token = newToken.data.access_token
@@ -144,6 +147,7 @@ app.get('/hello', isSigned, async(req, res) => {
     let sess = req.session.oxdapi
    
     if(sess.uprofile.userState == "active"){
+        //super user only
         if(setting.super_user_only && sess.uprofile.userRole != "superuser"){
             res.render('warning', { 'setting': setting, 'uprofile': sess.uprofile})
         }
