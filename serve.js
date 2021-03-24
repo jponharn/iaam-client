@@ -3,10 +3,10 @@ var session = require('express-session')
 let setting = require('./setting.json')
 const fetch = require('node-fetch')
 const fs = require('fs')
-var app = express()
+// var app = express()
 
-// const app = require("https-localhost")()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+const app = require("https-localhost")()
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const oxd = require('oxd-node')(setting.oxd_setting);
 
@@ -207,7 +207,7 @@ app.get('/callback', async (req, res) => {
 
 
 app.post('/register', (req, res) => {
-    data = req.body
+    let data = req.body
     oxd.register_site({
         op_host: setting.op_host,
         authorization_redirect_uri: data.authorization_redirect_uri,
@@ -229,7 +229,7 @@ app.post('/register', (req, res) => {
 })
 
 app.post('/getAuthURL', (req, res) => {
-    data = req.body
+    let data = req.body
     oxd.get_authorization_url({
         oxd_id: data.oxd_id
     }, (err, response) => {
@@ -259,6 +259,25 @@ app.post('/logout', (req, res) => {
         });
     }
     
+})
+
+app.post('/remove_client', (req, res) => {
+    let data = req.body
+    oxd.remove_site({
+        oxd_id: data.oxd_id
+    }, (err, response) => {
+        if (err) {
+            console.log('Error : ', err)
+            res.send(err)
+        }
+        if(response.status == 'ok'){
+            setting.reg = {}
+            setting.oxd_id = ""
+            fs.writeFileSync("./setting.json", JSON.stringify(setting));
+        }
+        res.status(200).send(response)
+    });
+
 })
 
 

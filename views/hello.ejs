@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <% if(features){%>
+        <% if(!features.status){%>
         <div class="row section">
             <div class="card w-100">
                 <h5 class="card-header">Features</h5>
@@ -58,6 +58,23 @@
                             </div>
                         </div>
                     <% })%>
+                </div>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="card w-100">
+                <h5 class="card-header">Remove Client</h5>
+                <div class="card-body">
+                    <h5 class="card-title">Client Name: <%= setting.reg.client_name%></h5>
+                    <div class="mb-3 row">
+                        <label for="rm_oxd_id" class="col-sm-2 col-form-label">oxd_id</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="rm_oxd_id" value="<%= setting.oxd_id%>">
+                        </div>
+                    </div>
+                    <% if(uprofile.userRole == 'superuser'){%>
+                    <button type="button" class="btn btn-danger" id="rm_client_submit" style="float: right;">Remove</button>
+                    <% }%>
                 </div>
             </div>
         </div>
@@ -88,6 +105,27 @@
                 window.location = res.uri
             }
         })
+    })
+
+    $("#rm_client_submit").on("click", function(){
+        var txt;
+        var r = confirm("Want to remove client?");
+        if (r == true) {
+            let headers = {
+                'Content-Type': 'application/json'
+            }
+
+            let data = {
+                "oxd_id": "<%= setting.oxd_id%>"
+            }
+            // alert(data)
+            postData("/remove_client", headers, data).then(res => {
+                if(res){
+                    window.location = "/"
+                }
+            })
+        } 
+        
     })
 </script>
 
