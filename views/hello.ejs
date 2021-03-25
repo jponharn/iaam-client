@@ -45,19 +45,69 @@
                 </div>
             </div>
         </div>
-        <% if(!features.status){%>
+        <% if(features.status == "ok"){%>
         <div class="row section">
             <div class="card w-100">
                 <h5 class="card-header">Features</h5>
                 <div class="card-body">
                     <h5 class="card-title">Allow you to access:</h5>
-                    <% features.forEach(element => {%>
+                    <% features.data.forEach(element => {%>
                         <div class="mb-3 row">
                             <div class="col-sm-12">
                                 <input type="text" readonly class="form-control-plaintext" id="user_role" value="<%= element%>">
                             </div>
                         </div>
                     <% })%>
+                </div>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="card w-100">
+                <h5 class="card-header">Get User</h5>
+                <div class="card-body">
+                    <h5 class="card-title">get list user</h5>
+                    <button type="button" class="btn btn-primary" id="get_user_submit" style="margin-bottom: 20px;">Get User</button>
+                    <div class="mb-3 row" >
+                        <div class="col-sm-4">
+                            <input type="text" readonly class="form-control-plaintext" value="NAME">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" readonly class="form-control-plaintext" value="AGE">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" readonly class="form-control-plaintext" value="PHONE">
+                        </div>
+                    </div>
+                    <div id="user_list">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="card w-100">
+                <h5 class="card-header">Create User</h5>
+                <div class="card-body">
+                    <h5 class="card-title">add new user</h5>
+                    <div class="mb-3 row" >
+                        <label for="user_name" class="col-sm-2 col-form-label">NAME</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="add_name" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row" >
+                        <label for="user_name" class="col-sm-2 col-form-label">AGE</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="add_age" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row" >
+                        <label for="user_name" class="col-sm-2 col-form-label">PHONE</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="add_phone" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="add_user_submit">Add User</button>
                 </div>
             </div>
         </div>
@@ -125,6 +175,52 @@
                 }
             })
         } 
+        
+    })
+
+    $("#get_user_submit").on("click", function(){
+        fetch('/get_user')
+        .then(response => response.json())
+        .then(user => {
+            let inner_html = ""
+            if(user.status != "error"){
+                user.data.forEach(element => {
+                    inner_html += `<div class="mb-3 row">
+                                <div class="col-sm-4">
+                                    <input type="text" readonly class="form-control-plaintext" value="${element.name}">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" readonly class="form-control-plaintext" value="${element.age}">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" readonly class="form-control-plaintext" value="${element.phone}">
+                                </div>
+                            </div>`
+                })
+            }
+            else inner_html = `<div class="mb-3 row">
+                            <div class="col-sm-4">
+                                <input type="text" readonly class="form-control-plaintext" value="${element.data}">
+                            </div>
+                        </div>`
+            document.getElementById("user_list").innerHTML = inner_html
+        });
+    })
+
+    $("#add_user_submit").on("click", function(){
+
+        let headers = {
+            'Content-Type': 'application/json'
+        }
+
+        let data = {
+            "name": $("#add_name").val(),
+            "age": $("#add_age").val(),
+            "phone": $("#add_phone").val()
+        }
+        postData("/add_user", headers, data).then(res => {
+            alert(res.data)
+        })
         
     })
 </script>

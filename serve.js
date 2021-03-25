@@ -3,10 +3,10 @@ var session = require('express-session')
 let setting = require('./setting.json')
 const fetch = require('node-fetch')
 const fs = require('fs')
-var app = express()
+// var app = express()
 
-// const app = require("https-localhost")()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+const app = require("https-localhost")()
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 const oxd = require('oxd-node')(setting.oxd_setting);
 
@@ -277,6 +277,51 @@ app.post('/remove_client', (req, res) => {
         }
         res.status(200).send(response)
     });
+
+})
+
+app.get('/get_user', (req, res) => {
+    let sess = req.session.oxdapi
+    let options = {
+        method: 'GET',
+        headers: {
+            "oxd_id": setting.oxd_id,
+            "scope": setting.reg.scope,
+            "access_token": sess.access_token,
+            "refresh_token": sess.refresh_token,
+            "role": sess.uprofile.userRole,
+            "user_name": sess.uprofile.user_name
+        }
+    }
+    fetch(`${setting.api_endpoint}/getUser`, options).then(res => res.json())
+            .then(json => {
+                res.send(json)
+            });
+
+})
+
+app.post('/add_user', (req, res) => {
+    let data = req.body
+    let sess = req.session.oxdapi
+    let options = {
+        method: 'POST',
+        headers: {
+            "oxd_id": setting.oxd_id,
+            "scope": setting.reg.scope,
+            "access_token": sess.access_token,
+            "refresh_token": sess.refresh_token,
+            "role": sess.uprofile.userRole,
+            "user_name": sess.uprofile.user_name,
+            "body": JSON.stringify(data)
+        }
+        
+    }
+
+    fetch(`${setting.api_endpoint}/createUser`, options).then(res => res.json())
+            .then(json => {
+                res.send(json)
+            });
+
 
 })
 
