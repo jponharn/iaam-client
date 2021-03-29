@@ -48,3 +48,57 @@ Application starting at port: "client_port"
 ```
 node serve.js
 ```
+
+# Register Site
+```
+oxd.register_site({
+        op_host: "https://iaamdemo.lsr.nectec.or.th",
+        authorization_redirect_uri: "https://localhost:8001/callback",
+        post_logout_redirect_uri: "https://localhost:8001/callback",
+        scope: ["openid", "email", "profile", "uma_protection"],
+        grant_types: ["authorization_code", "client_credentials"],
+        client_name: "client name"
+      }, (err, response) => {
+        if (err) {
+          console.log('Error : ', err);
+          res.send(err)
+        }
+        setting.oxd_id = response.data.oxd_id
+        res.status(200).send({'status':'OK'})
+      });
+```
+**Response:**
+```
+{
+    "status":"ok",
+    "data":{
+        "oxd_id":"6F9619FF-8B86-D011-B42D-00CF4FC964FF"
+    }
+}
+```
+
+# Remove Site
+```
+oxd.remove_site({
+        oxd_id: "<oxd_id>"
+    }, (err, response) => {
+        if (err) {
+            console.log('Error : ', err)
+            res.send(err)
+        }
+        if(response.status == 'ok'){
+            setting.reg = {}
+            setting.oxd_id = ""
+        }
+        res.status(200).send(response)
+    });
+```
+**Response:**
+```
+{
+    "status":"ok",
+    "data": {
+        "oxd_id": "6F9619FF-8B86-D011-B42D-00CF4FC964FF"
+    }
+}
+```
